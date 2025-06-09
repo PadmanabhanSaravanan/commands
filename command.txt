@@ -1,3 +1,33 @@
+RHEL 
+
+Install Docker and provide admin privilage
+
+sudo dnf remove docker docker-client docker-client-latest docker-common  docker-latest docker-latest-logrotate  docker-logrotate docker-engine podman runc
+sudo dnf -y install dnf-plugins-core
+sudo dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+sudo dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo systemctl enable --now docker
+sudo visudo
+sudo chown user:docker /usr/bin
+sudo chmod u+s /usr/bin
+sudo usermod -aG docker $USER
+exit
+docker info
+
+Install kubectl
+
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
+echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+kubectl version --client
+
+
+
+
+Ubuntu
+
+
 # Add Docker's official GPG key:
 sudo apt-get update
 sudo apt-get install ca-certificates curl
