@@ -75,7 +75,7 @@ kubectl delete pv nfs-pv
 docker run --rm -it --privileged --network host vijaynvb/nfs-common:latest /bin/bash
 sudo mount -t nfs -o nolock 10.32.2.57:/srv/kubernetes /mnt
 
-
+# nfs-client.yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -91,3 +91,63 @@ spec:
     stdin: true
     tty: true
   restartPolicy: Never
+
+
+
+#nfs-pv.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: 10.32.2.57     # Replace with your NFS server IP
+    path: /srv/kubernetes/           # Exported NFS directory
+
+
+
+# nfs-pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  volumeName: nfs-pv
+  storageClassName: nfs
+
+
+
+
+#pod-using-nfs.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nfs-test-pod
+spec:
+  hostNetwork: true
+  containers:
+  - name: shell
+    image: docker.io/vijaynvb/nfs-common:latest
+    command: ["/bin/bash", "-c", "sleep infinity"]
+    securityContext:
+      privileged: true
+    stdin: true
+    tty: true
+    volumeMounts:
+      - name: nfs-volume
+        mountPath: /mnt
+  volumes:
+    - name: nfs-volume
+      persistentVolumeClaim:
+        claimName: nfs-pvc
