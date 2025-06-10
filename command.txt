@@ -59,3 +59,15 @@ kubectl get nodes
 ./04_get_cluster_config_file.sh 
 ./05_install_cluster.sh 
 kubectl get pods
+
+
+
+
+kubectl apply -f nfs-pv.yaml
+kubectl apply -f nfs-pvc.yaml
+kubectl apply -f pod-using-nfs.yaml
+
+kubectl delete pod nfs-test-pod
+kubectl delete pvc nfs-pvc
+kubectl delete pv nfs-pv
+
