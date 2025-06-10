@@ -155,7 +155,7 @@ spec:
 
 
 
-helm install postgresql-nfs bitnami/postgresql \
+helm install postgresql-nfs oci://registry-1.docker.io/bitnamicharts/postgresql \
   --set global.storageClass=nfs-client \
   --set primary.persistence.storageClass=nfs-client \
   --set auth.postgresPassword=mysecurepassword \
