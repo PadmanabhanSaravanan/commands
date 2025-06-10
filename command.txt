@@ -72,34 +72,22 @@ kubectl delete pvc nfs-pvc
 kubectl delete pv nfs-pv
 
 
+docker run --rm -it --privileged --network host vijaynvb/nfs-common:latest /bin/bash
+sudo mount -t nfs -o nolock 10.32.2.57:/srv/kubernetes /mnt
 
-apiVersion: apps/v1
-kind: Deployment
+
+apiVersion: v1
+kind: Pod
 metadata:
-  name: writer
+  name: nfs-debug
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: writer
-  template:
-    metadata:
-      labels:
-        app: writer
-    spec:
-      containers:
-      - name: content
-        image: alpine:latest
-        volumeMounts:
-        - name: html
-          mountPath: /html
-        command: ["/bin/sh", "-c"]
-        args:
-        - while true; do
-          date >> /html/index.html;
-          sleep 5;
-          done
-      volumes:
-      - name: html
-        persistentVolumeClaim:
-          claimName: nfs-pvc
+  hostNetwork: true
+  containers:
+  - name: shell
+    image: docker.io/vijaynvb/nfs-common:latest
+    command: ["/bin/bash", "-c", "sleep infinity"]
+    securityContext:
+      privileged: true
+    stdin: true
+    tty: true
+  restartPolicy: Never
