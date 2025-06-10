@@ -151,3 +151,14 @@ spec:
     - name: nfs-volume
       persistentVolumeClaim:
         claimName: nfs-pvc
+
+
+
+
+helm install postgresql-nfs bitnami/postgresql \
+  --set global.storageClass=nfs-client \
+  --set primary.persistence.storageClass=nfs-client \
+  --set auth.postgresPassword=mysecurepassword \
+  --set auth.username=myuser \
+  --set auth.password=mypassword \
+  --set auth.database=mydatabase
